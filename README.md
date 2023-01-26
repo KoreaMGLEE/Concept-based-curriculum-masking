@@ -30,4 +30,4 @@ Results on the GLUE dev set
 ## Contact Info 
 For help or issues using CCM, please submit a GitHub issue. 
 
-For personal communication related to CCM, please contact Mingyu Lee ```decon9201@korea.ac.kr``` or Jun-Hyung Park ```irish@korea.ac.kr```.
+For personal communication related to CCM, please contact Mingyu Lee ```<decon9201@korea.ac.kr>``` or Jun-Hyung Park ```<irish07@korea.ac.kr>```.
