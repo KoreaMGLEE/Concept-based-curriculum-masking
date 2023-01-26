@@ -24,8 +24,22 @@ Results on the GLUE dev set
 | BERT (base, 110M)    |  81.7 | 90.4 | 89.5 | 
 | __CCM (base, 110M)__ |  __84.1__ | __91.0__ | __91.4__ | 
 
-## Pre-training 
+## Requirements 
+ - Python 3 
+ - Transformers 1.1
+ - Numpy 
+ - pytorch
 
+## Pre-training 
+#### Curriculum Construction
+
+#### Data Pre-processing 
+
+#### Pre-train the model 
+
+
+## Fine-tuning 
+####  Finetune Pre-trained Models on GLUE tasks
 
 ## Contact Info 
 For help or issues using CCM, please submit a GitHub issue. 
