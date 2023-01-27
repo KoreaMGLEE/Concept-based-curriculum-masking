@@ -30,6 +30,18 @@ Results on the GLUE dev set
  - Numpy 
  - pytorch
 
+## Download conceptnet
+Download ConceptNet assertions.   
+
+```
+# Download assertions in the data folder.
+$ wget ./data/assertions.csv https://s3.amazonaws.com/conceptnet/downloads/2019/edges/conceptnet-assertions-5.7.0.csv.gz
+
+# run concept_extraction.py 
+$ python ./script/concept_extraction.py
+```
+
+
 ## Pre-training 
 #### Curriculum Construction
 
