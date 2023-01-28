@@ -25,9 +25,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--conceptnet_path", default='../data/preprocessed_conceptnet', type=str)
     parser.add_argument("--num_of_hops", default=1, type=int)
-    parser.add_argument("--basic_concept_path", default='../data/concept_based_curriculum/basic_concepts', type=str)
+    parser.add_argument("--basic_concept_path", default='../data/basic_concepts', type=str)
     parser.add_argument("--save_dir", default='../data/concept_based_curriculum/', type=str)
-    parser.add_argument("--num_of_stages", default=2, type=int)
+    parser.add_argument("--num_of_stages", default=3, type=int)
     args = parser.parse_args()
 
     with open(args.conceptnet_path, 'rb') as f: conceptnet = pickle.load(f)
@@ -39,7 +39,7 @@ if __name__ == '__main__':
 
     current_conceptset = basic_concept_set
     seen_concepts = {}
-    for s in range(args.num_of_stages-1):
+    for s in range(args.num_of_stages-2):
         curriculum_stage += 1
         for i in range(args.num_of_hops):
             current_conceptset, seen_concepts = construct_next_stage(current_conceptset, conceptnet, seen_concepts)

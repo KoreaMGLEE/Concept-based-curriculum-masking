@@ -10,7 +10,7 @@ parser.add_argument("--topk_connected_concepts", default=5000, type=int)
 parser.add_argument("--corpus_dir", default='../data/pre-training-corpus/', type=str)
 parser.add_argument("--delete_threshold", default=100000, type=int)
 parser.add_argument("--basicConcepts_num", default=3000, type=int)
-parser.add_argument("--save_path", default='../data/concept_based_curriculum/basic_concepts', type=str)
+parser.add_argument("--save_path", default='../data/basic_concepts', type=str)
 args = parser.parse_args()
 
 with open(args.conceptnet_path, 'rb') as f:
