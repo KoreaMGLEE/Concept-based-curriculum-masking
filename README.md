@@ -52,6 +52,13 @@ Use ```./script/basicconcept_selection.py``` to create the first stage of the cu
  - ```--basicConcepts_num```: Set the number of basic concepts used for the curriculum. 
  - ```--save_path```: A path to save the set of basic concepts.
 
+Use ```./script/curriculum_construction.py``` to construct concept-based curriculum with basic concepts. 
+ - ```--conceptnet_path```: A path to preprecessed conceptnet file. 
+ - ```--num_of_hops```: Set the number of hops for adding related concepts to the next stage concept set.
+ - ```--basic_concept_path```: A path to load the set of basic concepts.
+ - ```--save_dir```: A path to save the set of concepts for each stage of the curriculum.
+ - ```--num_of_stages```: Set the number of stage for the curriculum.
+
 #### Data Pre-processing 
 
 #### Pre-train the model 
