@@ -44,6 +44,13 @@ $ python ./script/concept_extraction.py
 
 ## Pre-training 
 #### Curriculum Construction
+Use ```./script/basicconcept_selection.py``` to create the first stage of the curriculum with basic concepts which are connected with many other concepts in the knowledge graph and frequently occur in the pre-training corpus.
+ - ```--conceptnet_path```: A path to preprecessed conceptnet file. 
+ - ```--topk_connected_concepts```: Top k concepts that are connected to many other concepts in the knowledge graph. 
+ - ```--corpus_dir```: A directory containing raw text files to turn into MLM pre-training examples.
+ - ```--delete_threshold```: Frequency threshold to filtering rare concepts.
+ - ```--basicConcepts_num```: Set the number of basic concepts used for the curriculum. 
+ - ```--save_path```: A path to save the set of basic concepts.
 
 #### Data Pre-processing 
 
