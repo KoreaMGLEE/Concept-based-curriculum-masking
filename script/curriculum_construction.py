@@ -48,6 +48,7 @@ if __name__ == '__main__':
 
     final_stage_conceptset = {}
     for c in conceptnet.keys():
-        final_stage_conceptset[c] = len(conceptnet[c].keys())
+        if c not in seen_concepts.keys():
+            final_stage_conceptset[c] = len(conceptnet[c].keys())
 
-    with open(os.path.join(args.save_dir, f'curriculum_{curriculum_stage+1}'), 'wb') as f: pickle.dump(current_conceptset, f)
+    with open(os.path.join(args.save_dir, f'curriculum_{curriculum_stage+1}'), 'wb') as f: pickle.dump(final_stage_conceptset, f)
