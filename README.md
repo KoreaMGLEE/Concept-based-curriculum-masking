@@ -60,11 +60,11 @@ Use ```./script/curriculum_construction.py``` to construct concept-based curricu
  - ```--num_of_stages```: Set the number of stage for the curriculum.
 
 #### Data Pre-processing 
-Use ```./script/curriculum_construction.py``` to identify concepts in the corpus and arrange with curriculum. 
+Use ```./script/curriculum_construction.py``` to identify concepts in the corpus and arrange them along with the curriculum. 
  - ```--corpus_dir```: A directory containing raw text files to turn into MLM pre-training examples.
  - ```--save_dir```:  A path to save the pre-processed corpus.
  - ```--curriculum_dir```: A directory containing the concept-based curriculum.
- - ```--process_num```: Set the number of CPU processor for the pre-processing.
+ - ```--process_num```: Set the number of CPU processors for the pre-processing.
 
  
 #### Pre-train the model 
