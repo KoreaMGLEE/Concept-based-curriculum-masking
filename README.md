@@ -70,7 +70,13 @@ Use ```./script/curriculum_construction.py``` to identify concepts in the corpus
 #### Pre-train the model 
 Finally, use ```./script/pre-training.py``` to pre-train your models with the concept-based curriculum masking.
 
-
+ - ```--curriculum_dir```: A directory containing the concept-based curriculum.
+ - ```--lr```: Set the learning rate.
+ - ```--epochs```: Set the number of epochs. 
+ - ```--batch_size```: Set the batch size for conducting at once. 
+ - ```--step_batch_size```: Set the batch size for updating per each step (If the memory of GPU is enough, set the batch_size and step_batch_size the same.
+ - ```--data_path```: A directory containing pre-processed examples.
+ - ```--warmup_steps```: Set the number of steps to warmup the model with the original MLM. 
 
 
 ## Contact Info 
