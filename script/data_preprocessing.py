@@ -31,6 +31,20 @@ def find_cpt(datapoint, cpt_dic):
             cpt_in_doc.append(multigram_cpt)
     return cpt_in_doc, doc
 
+def find_word_not_inConceptNet(datapoint, cpt_dic):
+    doc = str()
+
+    for text in datapoint['original_text']:
+        doc = doc + text.replace(".", "").replace(",", "")
+
+    cpt_list = doc.split()
+    cpt_in_doc = []
+
+    for multigram_cpt in cpt_list:
+        if multigram_cpt not in cpt_dic.keys():
+            cpt_in_doc.append(multigram_cpt)
+
+    return cpt_in_doc, doc
 
 def add_find_cpt(file_name, load_dir):
     with open(os.path.join(load_dir, file_name), 'r') as f:
@@ -62,7 +76,7 @@ def add_find_cpt(file_name, load_dir):
             encoded_text.extend(add_ids)
             original_str = original_str + ' ' + line
 
-
+    final_curriculum_num = 0
     for curriculum_num in range(len(os.listdir(args.curriculum_dir))):
         with open(os.path.join(args.curriculum_dir, 'curriculum_' + str(curriculum_num+1)), 'rb') as f:
             curriulum_concept_set = pickle.load(f)
@@ -86,7 +100,20 @@ def add_find_cpt(file_name, load_dir):
                 find_cpt_list, doc = find_cpt(d_point, curriulum_concept_set)
                 d_point[f'curriculum_{curriculum_num+1}_concepts'] = find_cpt_list
 
-    with open(os.path.join(args.save_dir, file_name.split('.')[0]), 'wb') as f:
+            final_curriculum_num = curriculum_num
+    entire_concept = {}
+    for curriculum_num in range(len(os.listdir(args.curriculum_dir))):
+        with open(os.path.join(args.curriculum_dir, 'curriculum_' + str(curriculum_num+1)), 'rb') as f:
+            tmp_cpt_dic = pickle.load(f)
+        for key in tmp_cpt_dic.keys():
+            entire_concept[key] = 0
+
+    for d_point in new_set:
+        find_cpt_list, doc = find_word_not_inConceptNet(d_point, entire_concept)
+        d_point[f'curriculum_{final_curriculum_num+2}_concepts'] = find_cpt_list
+
+    print(new_set[0])
+    with open(os.path.join(args.save_dir, file_name.split('.')[0]+ '_'), 'wb') as f:
         pickle.dump(new_set, f)
 
 if __name__ == '__main__':
