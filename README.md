@@ -77,6 +77,7 @@ Finally, use ```./script/pre-training.py``` to pre-train your models with the co
  - ```--step_batch_size```: Set the batch size for updating per each step (If the memory of GPU is enough, set the batch_size and step_batch_size the same.
  - ```--data_path```: A directory containing pre-processed examples.
  - ```--warmup_steps```: Set the number of steps to warmup the model with the original MLM. 
+ - ```--model_size```: Choose the size of the model to pre-train.
 
 
 ## Contact Info 
