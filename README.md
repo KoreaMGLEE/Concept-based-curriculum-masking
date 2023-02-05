@@ -68,7 +68,7 @@ Use ```./script/curriculum_construction.py``` to identify concepts in the corpus
 
  
 #### Pre-train the model 
-Finally, use ```./script/curriculum_construction.py``` to pre-train your models with the concept-based curriculum masking.
+Finally, use ```./script/pre-training.py``` to pre-train your models with the concept-based curriculum masking.
 
 
 
