@@ -1,19 +1,18 @@
 import os
 import copy
+import torch
 import random
 import argparse
 import sys
 import os
 import torch.nn as nn
 from torch.utils.data import DataLoader
-
 sys.path.append(os.getcwd())
-from transformers import BertTokenizer, get_linear_schedule_with_warmup
+from transformers import BertTokenizer, get_linear_schedule_with_warmup, BertForMaskedLM
 from src.bert_layers import Bert_For_Att_output_MLM
-import torch
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
-from configuration.config import Bert_Medium_Config
+from configuration.config import Bert_Base_Config, Bert_Medium_Config, Bert_Small_Config
 from src.dataloader import padded_sequence, create_dataset_base_dynamic
 
 
@@ -38,28 +37,24 @@ def get_disc_batch(logits, sub_batch, sub_label_position):
 
 def train(model, summary, args):
     scaler = torch.cuda.amp.GradScaler()
+    criterion = nn.CrossEntropyLoss()
 
     step = 1
     iters = 1
-
-
-    criterion = nn.CrossEntropyLoss()
-    softmax = nn.Softmax(-1)
-
     curriculum_num = 0
+
     for epoch in range(args.epochs):
         Loss = 0
         Lm_Loss = 0
         Loss_len = 0
-
         Cm_number = 0
         Total_number = 0
         passed_example = 0
 
         print("now %s epoch..." % str(epoch + 1))
-        folders = os.listdir(args.data_path)
-        random.shuffle(folders)
-        for file in folders:
+        files = os.listdir(args.data_path)
+        random.shuffle(files)
+        for file in files:
             train_dataset = create_dataset_base_dynamic(args.data_path, file, curriculum_num, tokenizer)
             train_dataloader = DataLoader(train_dataset, batch_size=args.step_batch_size, shuffle=True,
                                           collate_fn=padded_sequence, drop_last=True, num_workers=10)
@@ -104,7 +99,6 @@ def train(model, summary, args):
                 scaler.update()
                 optimizer.zero_grad()
 
-
                 iters += 1
 
                 scaler.step(optimizer)
@@ -146,46 +140,55 @@ def train(model, summary, args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpu_num", default='0', help="choose gpu number: 0, 1, 2, 3", type=int)
-    parser.add_argument("--pretrained", default='bert-base_uncased',
-                        help="choose model pretrained weight from: bert-base-uncased, bert-large-uncased, roberta-base, roberta-large",
-                        type=str)
     parser.add_argument("--lr", default=5e-4, help="insert learning rate", type=float)
-    parser.add_argument("--weight_decay", default=0.01, help="insert weight decay", type=float)
     parser.add_argument("--epochs", default=1000, help="insert epochs", type=int)
     parser.add_argument("--batch_size", default=128, help="insert batch size", type=int)
     parser.add_argument("--step_batch_size", default=128, help="insert step batch size", type=int)
-    parser.add_argument("--random_seed", default=16, help="insert step batch size", type=int)
-    parser.add_argument("--data_path", default='../',
+    parser.add_argument("--data_path", default='../data/preprocessed_corpus/',
+                        type=str)
+    parser.add_argument("--model_size", default='base',
                         type=str)
     parser.add_argument("--warmup_steps", default=100000,
                         type=int)
-
     args = parser.parse_args()
-    args.random_seed = random.randint(1, 5000)
-    summary = SummaryWriter(comment='runs/BERT_%s_%s' % (str(args.pretrained), str(args.random_seed)))
-    random.seed(args.random_seed)
-    torch.manual_seed(args.random_seed)
 
+    ## set a random seed
+    random_seed = random.randint(1, 5000)
+    summary = SummaryWriter(comment='runs/BERT_%s' % (str(random_seed)))
+    torch.manual_seed(random_seed)
+
+    ## change allocation of current GPU
     device = torch.device(f'cuda:{args.gpu_num}' if torch.cuda.is_available() else 'cpu')
-    torch.cuda.set_device(device)  # change allocation of current GPU
+    torch.cuda.set_device(device)
     print('Current cuda device ', torch.cuda.current_device())
 
+    ## load a pre-trained tokenizer
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    configuration = Bert_Medium_Config
-    model = Bert_For_Att_output_MLM(configuration, True, 128)
+
+    ## set a model configuration
+    if args.model_size == 'small':
+        configuration = Bert_Small_Config
+        model = Bert_For_Att_output_MLM(configuration, True)
+    elif args.model_size == 'medium':
+        configuration = Bert_Medium_Config
+        model = Bert_For_Att_output_MLM(configuration, True)
+    elif args.model_size == 'base':
+        configuration = Bert_Base_Config
+        model = Bert_For_Att_output_MLM(configuration, True)
+    model.to(device)
 
     param_optimizer = list(model.named_parameters())
     no_decay = ['bias', 'gamma', 'beta', 'LayerNorm']
+
     optimizer_grouped_parameters = [
         {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)],
          'weight_decay': args.weight_decay},
         {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
     ]
+
     optimizer = torch.optim.AdamW(optimizer_grouped_parameters, betas=(0.9, 0.999), eps=1e-6, lr=args.lr)
     optimizer.zero_grad()
     lr_scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args.warmup_steps,
                                                 num_training_steps=1000000)
-    model.to(device)
-
 
     train(model, summary, args)
