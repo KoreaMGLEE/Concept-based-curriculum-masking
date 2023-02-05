@@ -41,23 +41,27 @@ def add_find_cpt(file_name, load_dir):
 
     encoded_text = []
     original_str = str()
-
-    for i, line in enumerate(lines):
+    print(len(lines))
+    data_id = 0
+    num_add_ids = 0
+    for line in lines[:1000]:
         ## tokenizer.batch_encode is much faster than tokenizer.encode
         ## If you want to use a huge pre-training corpus, just modify the code here a bit.
         add_ids = tokenizer.encode(line)[1:-1]
         if len(encoded_text) + len(add_ids) > 510:
             datapoint['encoded_txt'] = encoded_text
             datapoint['original_text'] = original_str
-            dataset[f'id_{i}'] = {'encoded_txt': encoded_text,
+            dataset[f'id_{data_id}'] = {'encoded_txt': encoded_text,
                                   'original_text': original_str}
             encoded_text = add_ids
             original_str = line
+            data_id += 1
+            num_add_ids = 0
         else:
+            num_add_ids += 1
             encoded_text.extend(add_ids)
             original_str = original_str + ' ' + line
-        if i > 100:
-            break
+
 
     for curriculum_num in range(len(os.listdir(args.curriculum_dir))):
         with open(os.path.join(args.curriculum_dir, 'curriculum_' + str(curriculum_num+1)), 'rb') as f:
@@ -66,8 +70,9 @@ def add_find_cpt(file_name, load_dir):
         if curriculum_num == 0:
             for d_ in dataset.keys():
                 find_cpt_list, doc = find_cpt(dataset[d_], curriulum_concept_set)
-                datapoint[f'curriculum_{curriculum_num+1}_concepts'] = set(find_cpt_list)
-                new_set.append(datapoint)
+                dataset[d_][f'curriculum_{curriculum_num+1}_concepts'] = set(find_cpt_list)
+                new_d = copy.deepcopy(dataset[d_])
+                new_set.append(new_d)
 
         else:
             with open(os.path.join(args.curriculum_dir, 'curriculum_' + str(curriculum_num)), 'rb') as f:
@@ -79,10 +84,9 @@ def add_find_cpt(file_name, load_dir):
 
             for d_point in new_set:
                 find_cpt_list, doc = find_cpt(d_point, curriulum_concept_set)
-                datapoint[f'curriculum_{curriculum_num+1}_concepts'] = find_cpt_list
+                d_point[f'curriculum_{curriculum_num+1}_concepts'] = find_cpt_list
 
-
-    with open(os.path.join(args.save_dir, file_name), 'wb') as f:
+    with open(os.path.join(args.save_dir, file_name.split('.')[0]), 'wb') as f:
         pickle.dump(new_set, f)
 
 if __name__ == '__main__':
@@ -99,6 +103,7 @@ if __name__ == '__main__':
     sub_dir_list = os.listdir(args.corpus_dir)
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
     key_n_tokenzied_doc = {}
+
     if __name__ == '__main__':
         procs = []
         max_process_num = args.process_num
