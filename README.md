@@ -68,10 +68,10 @@ Use ```./script/curriculum_construction.py``` to identify concepts in the corpus
 
  
 #### Pre-train the model 
+Finally, use ```./script/curriculum_construction.py``` to pre-train your models with the concept-based curriculum masking.
 
 
-## Fine-tuning 
-####  Finetune Pre-trained Models on GLUE tasks
+
 
 ## Contact Info 
 For help or issues using CCM, please submit a GitHub issue. 
